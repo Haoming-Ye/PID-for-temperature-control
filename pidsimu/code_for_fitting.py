@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # read from excel
-df=pd.read_excel(r'C:\Users\10219\OneDrive\桌面\pidsimu\stepresponse.xlsx')
+df=pd.read_excel(r'C:\Users\10219\OneDrive\桌面\research lab stuff\pidsimu\excel_stepresponse.xlsx')
 
 # your time and temp data, differentiated and normalized by the 3.36 W input
 t = df['time'].to_numpy()
