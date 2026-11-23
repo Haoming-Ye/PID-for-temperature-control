@@ -42,27 +42,27 @@ from scipy.optimize import curve_fit
 
 #Step 2: Model and Simulation parameters setup
 # Resistance values for voltage
-R=7.3  # in Ohms
+R=2.68  # in Ohms
 
 # First-order plant: G(s) = K / (tau*s + 1)
-K = 5.415985071366008
-tau = 1571.2104158160894
+K = 30.376505925917755
+tau = 525.0010472383186
 
 # PID gains
-Kp = 12
-Ki = 0.1
+Kp = 2.3
+Ki = 0.15
 Kd = 0
 
 # Actuator saturation limits
 p_min = 0.0
-p_max = (12**2/R)*2
+p_max = (2.8**2/R)
 # endregion
 
 #Step 3: Simulated Control loop and plotting functions
-def pidloop(Kp,Ki,Kd,setpoint,time,disturbance):
+def pidloop(Kp,Ki,Kd,setpoint,time,disturbance=0):
     # Time setup, both in s
     t_total=time
-    dt = 5
+    dt = 4.5
     steps= int(t_total/dt)
     t=np.linspace(0,t_total,steps)
     # Create empty arrays for plots
@@ -111,7 +111,7 @@ def pidloop(Kp,Ki,Kd,setpoint,time,disturbance):
         u[i]=p
 
         # Back calculate voltage
-        volt=np.sqrt(p/2*R)
+        volt=np.sqrt(p*R)
 
         # windup check for integral
         if u[i] != p_raw:
@@ -152,7 +152,7 @@ def plotting(t,temp,u,e,setpoint,Kp,Ki=0,Kd=0):
     plt.legend()
 
     plt.subplot(1, 3, 2)
-    plt.plot(t[:-2], np.sqrt(u/2*R)[:-2], label='Heater Voltage')
+    plt.plot(t[:-2], np.sqrt(u*R)[:-2], label='Heater Voltage')
     plt.xlabel("Time [s]")
     plt.ylabel("Voltage [V]")
     plt.title("Heater Input")
@@ -192,11 +192,11 @@ def compplot(t,temp,u,e,setpoint,Kp,Ki=0,Kd=0):
 # templist_kp=[]
 # ulist_kp=[]
 # ind_kp=0
-# for Kp in np.arange(1,15,1):
-#     temp, u,e,t=pidloop(Kp,0,0,40,800)
+# for Kp in np.arange(2,3,0.1):
+#     temp, u,e,t=pidloop(Kp,0,0,60,800)
 #     templist_kp.append(temp)
 #     ulist_kp.append(u)
-#     plotting(t,templist_kp[ind_kp],ulist_kp[ind_kp],e,40,Kp)
+#     plotting(t,templist_kp[ind_kp],ulist_kp[ind_kp],e,60,Kp)
 #     ind_kp+=1
 # plt.show(block=True)
 
@@ -204,11 +204,11 @@ def compplot(t,temp,u,e,setpoint,Kp,Ki=0,Kd=0):
 # templist_ki=[]
 # ulist_ki=[]
 # ind_ki=0
-# for Ki in np.arange(0.01,0.05,0.01):
-#     temp, u,e,t=pidloop(8,Ki,0,40,800)
+# for Ki in np.arange(0.1,0.5,0.05):
+#     temp, u,e,t=pidloop(2.3,Ki,0,60,800)
 #     templist_ki.append(temp)
 #     ulist_ki.append(u)
-#     plotting(t,templist_ki[ind_ki],ulist_ki[ind_ki],e,40,8,Ki)
+#     plotting(t,templist_ki[ind_ki],ulist_ki[ind_ki],e,60,2.3,Ki)
 #     ind_ki+=1
 # plt.show(block=True)
 
@@ -233,16 +233,16 @@ def compplot(t,temp,u,e,setpoint,Kp,Ki=0,Kd=0):
 
 
 # Function to get responses
-def checkup(Kp,Ki,Kd,sp,t,disturbance):
+def checkup(Kp,Ki,Kd,sp,t,disturbance=0):
     a,b,c,d=pidloop(Kp,Ki,Kd,sp,t,disturbance)
     plotting(d,a,b,c,sp,Kp,Ki,Kd)
     #compplot(d,a,b,c,sp,Kp,Ki,Kd)
 
 # Results check
-# 8,0.03,0
-#checkup(7,0.02,0,[39,40,40],3000,3)
-checkup(8,0.03,0,[39,40,40],3000,disturbance=0.5)
-checkup(8,0.015,0,[39,40,40],3000,disturbance=0.5)
+# 2.3,0.15,0
+checkup(2.3,0.15,0,[60,60,60],800)
+#checkup(8,0.03,0,[39,40,40],3000,disturbance=0.5)
+#checkup(8,0.015,0,[39,40,40],3000,disturbance=0.5)
 #checkup(12,0.1,0,[40,30,70],6400)
 #checkup(8,0.03,0,25)
 #checkup(0.3,0.1,7,40)
